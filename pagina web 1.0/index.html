@@ -1,0 +1,841 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GameDraw 🎨</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0b12;
+    color: white;
+}
+
+/* BARRA SUPERIOR */
+
+header {
+    height: 65px;
+    background: #151522;
+    border-bottom: 2px solid #742cff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 25px;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #a56cff;
+}
+
+nav button {
+    width: auto;
+    margin: 0 5px;
+    padding: 9px 15px;
+}
+
+/* PÁGINAS */
+
+.pagina {
+    display: none;
+    min-height: calc(100vh - 65px);
+    padding: 30px;
+}
+
+.pagina.activa {
+    display: block;
+}
+
+/* INICIO */
+
+.inicio {
+    text-align: center;
+    padding-top: 100px;
+    background:
+        radial-gradient(circle at center,
+        #32146b,
+        #0b0b12 65%);
+}
+
+.inicio h1 {
+    font-size: 65px;
+    margin-bottom: 20px;
+}
+
+.inicio p {
+    color: #aaa;
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background: #742cff;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #955cff;
+}
+
+/* DIBUJAR */
+
+.editor {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 125px);
+}
+
+.herramientas {
+    width: 230px;
+    background: #151522;
+    padding: 15px;
+    border-radius: 12px;
+    overflow-y: auto;
+}
+
+.herramientas h3 {
+    color: #a56cff;
+    margin-bottom: 12px;
+}
+
+.herramientas button {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: none;
+}
+
+canvas {
+    background: white;
+    border-radius: 10px;
+    cursor: crosshair;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.canvas-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #08080d;
+    border-radius: 12px;
+}
+
+/* GALERÍA */
+
+.galeria {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(230px, 1fr));
+
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.dibujo {
+    background: #171722;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dibujo img {
+    width: 100%;
+    display: block;
+}
+
+.dibujo div {
+    padding: 12px;
+}
+
+.vacio {
+    color: #777;
+    text-align: center;
+    margin-top: 80px;
+}
+
+/* PERFIL */
+
+.perfil {
+    max-width: 600px;
+    margin: auto;
+    background: #151522;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.avatar {
+    font-size: 80px;
+    margin-bottom: 15px;
+}
+
+.perfil input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #0d0d15;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+/* MÓVIL */
+
+@media(max-width: 700px) {
+
+    header {
+        padding: 0 10px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    nav button {
+        padding: 7px;
+        font-size: 12px;
+    }
+
+    .editor {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .herramientas {
+        width: 100%;
+    }
+
+    canvas {
+        width: 100%;
+        height: auto;
+    }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🎨 GameDraw
+    </div>
+
+    <nav>
+
+        <button class="btn"
+                onclick="mostrar('inicio')">
+            🏠
+        </button>
+
+        <button class="btn"
+                onclick="mostrar('dibujar')">
+            🎨 Dibujar
+        </button>
+
+        <button class="btn"
+                onclick="mostrar('galeria')">
+            🖼️ Galería
+        </button>
+
+        <button class="btn"
+                onclick="mostrar('perfil')">
+            👤 Perfil
+        </button>
+
+    </nav>
+
+</header>
+
+
+<!-- INICIO -->
+
+<section id="inicio"
+         class="pagina activa inicio">
+
+    <h1>🎨 GameDraw</h1>
+
+    <p>
+        Dibuja, crea y comparte tus dibujos.
+    </p>
+
+    <button class="btn"
+            onclick="mostrar('dibujar')">
+        ✏️ EMPEZAR A DIBUJAR
+    </button>
+
+</section>
+
+
+<!-- DIBUJAR -->
+
+<section id="dibujar"
+         class="pagina">
+
+    <h1>🎨 Crear dibujo</h1>
+
+    <br>
+
+    <div class="editor">
+
+        <aside class="herramientas">
+
+            <h3>🖌️ Pinceles</h3>
+
+            <button class="btn"
+                    onclick="herramienta='normal'">
+                ✏️ Normal
+            </button>
+
+            <button class="btn"
+                    onclick="herramienta='neon'">
+                ✨ Neón
+            </button>
+
+            <button class="btn"
+                    onclick="herramienta='spray'">
+                💨 Spray
+            </button>
+
+            <button class="btn"
+                    onclick="herramienta='borrador'">
+                🧽 Borrador
+            </button>
+
+            <br>
+
+            <h3>🎨 Color</h3>
+
+            <input
+                type="color"
+                id="color"
+                value="#000000">
+
+            <br><br>
+
+            <h3>📏 Tamaño</h3>
+
+            <input
+                type="range"
+                id="tamano"
+                min="1"
+                max="60"
+                value="8">
+
+            <p>
+                Tamaño:
+                <span id="numero">8</span>
+            </p>
+
+            <br>
+
+            <button class="btn"
+                    onclick="limpiar()">
+                🗑️ Limpiar
+            </button>
+
+            <button class="btn"
+                    onclick="guardarDibujo()">
+                💾 Publicar dibujo
+            </button>
+
+        </aside>
+
+
+        <div class="canvas-area">
+
+            <canvas
+                id="canvas"
+                width="900"
+                height="600">
+            </canvas>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- GALERÍA -->
+
+<section id="galeria"
+         class="pagina">
+
+    <h1>🖼️ Galería</h1>
+
+    <p>
+        Aquí aparecen tus dibujos publicados.
+    </p>
+
+    <div id="galeriaDibujos"
+         class="galeria">
+
+        <div class="vacio">
+            Todavía no hay dibujos.
+            <br><br>
+            ¡Sé el primero en publicar uno! 🎨
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PERFIL -->
+
+<section id="perfil"
+         class="pagina">
+
+    <div class="perfil">
+
+        <div class="avatar">
+            🎨
+        </div>
+
+        <h1>Mi perfil</h1>
+
+        <input
+            id="nombre"
+            placeholder="Escribe tu nombre">
+
+        <button class="btn"
+                onclick="guardarPerfil()">
+            💾 Guardar perfil
+        </button>
+
+        <p id="mensajePerfil"></p>
+
+    </div>
+
+</section>
+
+
+<script>
+
+/* CAMBIAR PÁGINA */
+
+function mostrar(nombre) {
+
+    document
+        .querySelectorAll(".pagina")
+        .forEach(p => {
+            p.classList.remove("activa");
+        });
+
+    document
+        .getElementById(nombre)
+        .classList.add("activa");
+}
+
+
+/* CANVAS */
+
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+let dibujando = false;
+
+let herramienta = "normal";
+
+
+ctx.fillStyle = "white";
+
+ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+);
+
+
+/* TAMAÑO */
+
+const tamano =
+    document.getElementById("tamano");
+
+tamano.oninput = function() {
+
+    document.getElementById("numero")
+        .textContent = this.value;
+
+};
+
+
+/* DIBUJAR */
+
+function obtenerPosicion(e) {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    return {
+
+        x:
+        (e.clientX - rect.left)
+        * canvas.width / rect.width,
+
+        y:
+        (e.clientY - rect.top)
+        * canvas.height / rect.height
+
+    };
+}
+
+
+canvas.addEventListener(
+    "mousedown",
+    iniciar
+);
+
+canvas.addEventListener(
+    "mousemove",
+    dibujar
+);
+
+canvas.addEventListener(
+    "mouseup",
+    terminar
+);
+
+canvas.addEventListener(
+    "mouseleave",
+    terminar
+);
+
+
+function iniciar(e) {
+
+    dibujando = true;
+
+    const p =
+        obtenerPosicion(e);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        p.x,
+        p.y
+    );
+}
+
+
+function terminar() {
+
+    dibujando = false;
+
+    ctx.beginPath();
+
+}
+
+
+function dibujar(e) {
+
+    if (!dibujando) return;
+
+    const p =
+        obtenerPosicion(e);
+
+    let tamaño =
+        Number(tamano.value);
+
+    let color =
+        document.getElementById("color").value;
+
+
+    if (herramienta === "borrador") {
+
+        ctx.globalCompositeOperation =
+            "destination-out";
+
+    } else {
+
+        ctx.globalCompositeOperation =
+            "source-over";
+
+        ctx.strokeStyle = color;
+
+    }
+
+
+    ctx.lineWidth = tamaño;
+
+    ctx.lineCap = "round";
+
+
+    if (herramienta === "neon") {
+
+        ctx.shadowBlur = 20;
+
+        ctx.shadowColor = color;
+
+    } else {
+
+        ctx.shadowBlur = 0;
+
+    }
+
+
+    if (herramienta === "spray") {
+
+        for (let i = 0; i < 15; i++) {
+
+            let x =
+                p.x +
+                (Math.random() - .5)
+                * tamaño * 5;
+
+            let y =
+                p.y +
+                (Math.random() - .5)
+                * tamaño * 5;
+
+            ctx.fillStyle = color;
+
+            ctx.fillRect(
+                x,
+                y,
+                2,
+                2
+            );
+        }
+
+    } else {
+
+        ctx.lineTo(
+            p.x,
+            p.y
+        );
+
+        ctx.stroke();
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            p.x,
+            p.y
+        );
+
+    }
+
+}
+
+
+/* LIMPIAR */
+
+function limpiar() {
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    ctx.fillStyle = "white";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+
+/* PUBLICAR */
+
+function guardarDibujo() {
+
+    const imagen =
+        canvas.toDataURL("image/png");
+
+    let dibujos =
+        JSON.parse(
+            localStorage.getItem("dibujos")
+        ) || [];
+
+    dibujos.push(imagen);
+
+    localStorage.setItem(
+        "dibujos",
+        JSON.stringify(dibujos)
+    );
+
+    cargarGaleria();
+
+    mostrar("galeria");
+
+}
+
+
+/* GALERÍA */
+
+function cargarGaleria() {
+
+    const contenedor =
+        document.getElementById(
+            "galeriaDibujos"
+        );
+
+    let dibujos =
+        JSON.parse(
+            localStorage.getItem("dibujos")
+        ) || [];
+
+
+    if (dibujos.length === 0) {
+
+        contenedor.innerHTML =
+        `<div class="vacio">
+            Todavía no hay dibujos.
+            <br><br>
+            ¡Sé el primero! 🎨
+        </div>`;
+
+        return;
+    }
+
+
+    contenedor.innerHTML = "";
+
+
+    dibujos.forEach(
+        function(imagen, indice) {
+
+            const tarjeta =
+                document.createElement("div");
+
+            tarjeta.className =
+                "dibujo";
+
+            tarjeta.innerHTML = `
+
+                <img src="${imagen}">
+
+                <div>
+                    <b>🎨 Dibujo #${indice + 1}</b>
+                    <br><br>
+
+                    <button
+                        class="btn"
+                        onclick="descargar(${indice})">
+                        💾 Descargar
+                    </button>
+                </div>
+            `;
+
+            contenedor.appendChild(
+                tarjeta
+            );
+
+        }
+    );
+
+}
+
+
+/* DESCARGAR */
+
+function descargar(indice) {
+
+    let dibujos =
+        JSON.parse(
+            localStorage.getItem("dibujos")
+        ) || [];
+
+    const enlace =
+        document.createElement("a");
+
+    enlace.download =
+        "mi-dibujo.png";
+
+    enlace.href =
+        dibujos[indice];
+
+    enlace.click();
+
+}
+
+
+/* PERFIL */
+
+function guardarPerfil() {
+
+    const nombre =
+        document.getElementById(
+            "nombre"
+        ).value;
+
+    localStorage.setItem(
+        "nombreUsuario",
+        nombre
+    );
+
+    document.getElementById(
+        "mensajePerfil"
+    ).textContent =
+        "✅ Perfil guardado";
+
+}
+
+
+/* CARGAR */
+
+window.onload = function() {
+
+    cargarGaleria();
+
+    const nombre =
+        localStorage.getItem(
+            "nombreUsuario"
+        );
+
+    if (nombre) {
+
+        document.getElementById(
+            "nombre"
+        ).value = nombre;
+
+    }
+
+};
+
+</script>
+
+</body>
+</html>
+```
